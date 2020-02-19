@@ -53,4 +53,6 @@ def generate_maze(width,height,start=(0,0)):
                 cell.connected_neighbours.append(neighbour)
                 neighbour.connected_neighbours.append(cell)
 
-    return cells
+    return [[[(neighbour.x,neighbour.y) for neighbour in cells[x][y].neighbours]
+             for y in range(height)]
+            for x in range(width)]
