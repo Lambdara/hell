@@ -1,7 +1,7 @@
 # Pymazingl
 
-Pymazingl is an experiment in connecting Python, C, and OpenGL (through C).
+Pymazingl is an experiment in connecting C, Python (imbedded in C), and OpenGL (through C).
 
-The goal is to have a C program that calls Python code to generate a maze, and then visualizes this maze using OpenGL.
+The goal is to have a C program that calls Python code (via the C API for Python) to generate a maze, and then visualizes this maze using OpenGL.
 
-Currently, the maze-generation code is mostly done (though the output format may have to be changed a bit to make it nicer to read for C, as it's a list of a list of objects).
+Currently, the maze-generation code is done, and there is a C program which embeds Python in order to use the maze-generation code, which now just prints the loaded-in maze. (And is still very messy an probably has a memory leak.)
