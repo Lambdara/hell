@@ -23,8 +23,8 @@ def generate_maze(width,height,start=(0,0)):
         return cells
 
     # Assign cells their neighbours
-    for x in range(height):
-        for y in range(width):
+    for x in range(width):
+        for y in range(height):
             neighbours = []
             if x > 0:
                 neighbours.append(cells[x-1][y])
