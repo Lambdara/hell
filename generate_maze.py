@@ -19,7 +19,7 @@ def generate_maze(width,height,start=(0,0)):
     cells = [[Cell(x,y) for y in range(height)] for x in range(width)]
 
     # In the trivial case we are done (and searching wouldn't work so return now)
-    if width == height == 0:
+    if width == height == 1:
         return cells
 
     # Assign cells their neighbours
