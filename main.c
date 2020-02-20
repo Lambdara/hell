@@ -3,7 +3,7 @@
 #include <Python.h>
 #include <stdlib.h>
 
-int load_maze_from_python(cell_t ***cells, int width, int height) {
+int load_maze_from_python( int width, int height,cell_t * cells[][height]) {
     setenv("PYTHONPATH",".",1);
 
     PyObject *pName, *pModule, *pFunc;
@@ -98,14 +98,13 @@ int main(int argc, char *argv[]) {
 
     cell_t *cells[width][height];
 
-    for (int x; x < width; x++){
-        for(int y; y < height; y++){
+    for (int x = 0; x < width; x++){
+        for(int y = 0; y < height; y++){
             cells[x][y] = create_cell(x,y);
         }
     }
 
-    load_maze_from_python(cells, width, height);
+    load_maze_from_python(width, height,cells);
 
     return 0;
 }
-
