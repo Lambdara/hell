@@ -1,13 +1,9 @@
 #define PY_SSIZE_T_CLEAN
+#include "cell.h"
 #include <Python.h>
 #include <stdlib.h>
 
-struct pair_t {
-   int x;
-   int y;
-};
-
-int main(int argc, char *argv[]) {
+int load_maze_from_python(cell_t ***cells, int width, int height) {
     setenv("PYTHONPATH",".",1);
 
     PyObject *pName, *pModule, *pFunc;
@@ -15,12 +11,6 @@ int main(int argc, char *argv[]) {
 
     char *module_name= "generate_maze";
     char *function_name = "generate_maze";
-    long width = 3;
-    long height = 3;
-
-    // Cells of maze, stored as adjacency matrix
-    struct pair_t *cells[width][height];
-    int cell_sizes[width][height];
 
     // Initialize Python and load module
     Py_Initialize();
@@ -44,6 +34,7 @@ int main(int argc, char *argv[]) {
             pValue = PyObject_CallObject(pFunc, pArgs);
             Py_DECREF(pArgs);
             if (pValue != NULL) {
+
                 // Read it, just read it.
                 for (int x = 0; x < width; x++) {
                     for (int y = 0; y < height; y++) {
@@ -52,16 +43,15 @@ int main(int argc, char *argv[]) {
                         PyObject *list = PyList_GetItem(PyList_GetItem(pValue,PyLong_AsSsize_t(pyx)),PyLong_AsSsize_t(pyy));
                         long list_size = PyLong_AsLong(PyLong_FromSsize_t(PyList_Size(list)));
 
-                        cells[x][y] = malloc(list_size * sizeof(struct pair_t));
-                        cell_sizes[x][y] = list_size;
+                        cells[x][y]->neighbour_count = (int) list_size;
+                        cells[x][y]->neighbours = malloc(list_size * sizeof(cell_t *));
 
                         for (int i = 0; i < list_size; i++) {
                             PyObject *pyi = PyLong_FromLong(i);
                             PyObject *pair = PyList_GetItem(list, PyLong_AsSsize_t(pyi));
-                            PyObject *pairx = PyTuple_GetItem(pair, 0);
-                            PyObject *pairy = PyTuple_GetItem(pair, 1);
-                            cells[x][y][i].x = PyLong_AsLong(pairx);
-                            cells[x][y][i].y = PyLong_AsLong(pairy);
+                            int pairx = PyLong_AsLong(PyTuple_GetItem(pair, 0));
+                            int pairy = PyLong_AsLong(PyTuple_GetItem(pair, 1));
+                            cells[x][y]->neighbours[i] = cells[pairx][pairy];
                         }
                     }
                 }
@@ -78,14 +68,14 @@ int main(int argc, char *argv[]) {
         else {
             if (PyErr_Occurred())
                 PyErr_Print();
-            fprintf(stderr, "Cannot find function \"%s\"\n", argv[2]);
+            fprintf(stderr, "Cannot find function\n");
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
         PyErr_Print();
-        fprintf(stderr, "Failed to load \"%s\"\n", argv[1]);
+        fprintf(stderr, "Failed to load module\n");
         return 1;
     }
     if (Py_FinalizeEx() < 0) {
@@ -95,11 +85,27 @@ int main(int argc, char *argv[]) {
     for (int x = 0; x < width; x++){
         for (int y = 0; y < height; y++){
             printf("Adjacents of (%d,%d):\n",x,y);
-            for (int i = 0; i < cell_sizes[x][y] ; i++){
-                printf("(%d,%d)\n",cells[x][y][i].x,cells[x][y][i].y);
+            for (int i = 0; i < cells[x][y]->neighbour_count ; i++){
+                printf("(%d,%d)\n",cells[x][y]->neighbours[i]->x,cells[x][y]->neighbours[i]->y);
             }
         }
     }
+    return 0;
+}
+
+int main(int argc, char *argv[]) {
+    int width = 3, height = 3;
+
+    cell_t *cells[width][height];
+
+    for (int x; x < width; x++){
+        for(int y; y < height; y++){
+            cells[x][y] = create_cell(x,y);
+        }
+    }
+
+    load_maze_from_python(cells, width, height);
 
     return 0;
 }
+
