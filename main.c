@@ -7,7 +7,7 @@
 #include <GL/freeglut.h>
 
 cell_t ***cells;
-int width = 100, height = 20, connections = 0;
+int width = 20, height = 20, connections = 0;
 
 int load_maze_from_python( int width, int height, cell_t *** cells) {
     setenv("PYTHONPATH",".",1);
