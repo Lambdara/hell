@@ -1,4 +1,4 @@
-from random import shuffle
+from random import randint, shuffle
 
 class Cell:
     def __init__(self,x,y):
@@ -39,20 +39,22 @@ def generate_maze(width,height,start=(0,0)):
     # Search from start to every other cell in random order to generate a maze
     start_cell = cells[start[0]][start[1]]
 
-    stack = [start_cell]
+    stack = [(start_cell,neighbour) for neighbour in start_cell.neighbours]
+    shuffle(stack)
     visited = [start_cell]
 
     while stack:
-        cell = stack.pop()
+        from_cell, to_cell = stack.pop()
+        if to_cell not in visited:
+            to_cell.connected_neighbours.append(from_cell)
+            from_cell.connected_neighbours.append(to_cell)
+            visited.append(to_cell)
 
-        shuffle(cell.neighbours)
-        for neighbour in cell.neighbours:
-            if neighbour not in visited:
-                stack.append(neighbour)
-                visited.append(neighbour)
-                cell.connected_neighbours.append(neighbour)
-                neighbour.connected_neighbours.append(cell)
+            for neighbour in to_cell.neighbours:
+                if neighbour not in visited:
+                    stack.insert(randint(0,len(stack)), (to_cell,neighbour))
 
-    return [[[(neighbour.x,neighbour.y) for neighbour in cells[x][y].neighbours]
+
+    return [[[(neighbour.x,neighbour.y) for neighbour in cells[x][y].connected_neighbours]
              for y in range(height)]
             for x in range(width)]

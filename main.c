@@ -2,8 +2,14 @@
 #include "cell.h"
 #include <Python.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 
-int load_maze_from_python( int width, int height,cell_t * cells[][height]) {
+cell_t ***cells;
+int width = 100, height = 20, connections = 0;
+
+int load_maze_from_python( int width, int height, cell_t *** cells) {
     setenv("PYTHONPATH",".",1);
 
     PyObject *pName, *pModule, *pFunc;
@@ -79,32 +85,171 @@ int load_maze_from_python( int width, int height,cell_t * cells[][height]) {
         return 1;
     }
     if (Py_FinalizeEx() < 0) {
-        return 120;
+        fprintf(stderr, "Failed to finalize\n");
+        return 1;
     }
 
-    for (int x = 0; x < width; x++){
-        for (int y = 0; y < height; y++){
-            printf("Adjacents of (%d,%d):\n",x,y);
-            for (int i = 0; i < cells[x][y]->neighbour_count ; i++){
-                printf("(%d,%d)\n",cells[x][y]->neighbours[i]->x,cells[x][y]->neighbours[i]->y);
-            }
-        }
-    }
     return 0;
 }
 
-int main(int argc, char *argv[]) {
-    int width = 3, height = 3;
 
-    cell_t *cells[width][height];
+GLuint vbo;
+
+typedef struct {
+    float x, y, z;
+} vector3f;
+
+vector3f create_vector3f(float x, float y, float z) {
+    vector3f vector = {x, y, z};
+    return vector;
+}
+
+static void render_scene_cb()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, (width*height+connections)*6);
+
+    glDisableVertexAttribArray(0);
+
+    glutSwapBuffers();
+}
+
+static void initialize_glut_callbacks()
+{
+    glutDisplayFunc(render_scene_cb);
+}
+
+static void create_vertex_buffer()
+{
+    int cell_count = width * height;
+    int connection_count = 0;
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            connection_count += cells[x][y]->neighbour_count;
+        }
+    }
+
+    connections = connection_count/2;
+
+    vector3f vertices[(cell_count+connection_count)*6];
+
+    float width_interval = 2.0 / (width * 2.0 - 1.0);
+    float height_interval = 2.0 / (height * 2.0 - 1.0);
+    float width_interval_third = width_interval / 3;
+    float height_interval_third = height_interval / 3;
+
+    int i = 0;
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            vertices[i++] = create_vector3f(-1.0f + width_interval * 2 * x,
+                                            -1.0f + height_interval * 2 * y,
+                                            0.0f);
+            vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                            -1.0f + height_interval * 2 * y,
+                                            0.0f);
+            vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                            -1.0f + ((y * 2) + 1) * height_interval,
+                                            0.0f);
+            vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                            -1.0f + ((y * 2) + 1) * height_interval,
+                                            0.0f);
+            vertices[i++] = create_vector3f(-1.0f + width_interval * 2 * x,
+                                            -1.0f + ((y * 2) + 1) * height_interval,
+                                            0.0f);
+            vertices[i++] = create_vector3f(-1.0f + width_interval * 2 * x,
+                                            -1.0f + height_interval * 2 * y,
+                                            0.0f);
+            for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
+                cell_t* neighbour = cells[x][y]->neighbours[n];
+                if (neighbour->x == x + 1) {
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                                    -1.0f + height_interval * 2 * y + height_interval_third,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
+                                                    -1.0f + height_interval * 2 * y + height_interval_third,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
+                                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
+                                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
+                                                    0.0f);
+
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
+                                                    -1.0f + height_interval * 2 * y + height_interval_third,
+                                                    0.0f);
+
+
+
+                } else if (neighbour->y == y + 1) {
+                    vertices[i++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+                                                    -1.0f + ((y * 2) + 1) * height_interval,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+                                                    -1.0f + ((y * 2) + 1) * height_interval,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+                                                    -1.0f + ((y + 1) * 2) * height_interval,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+                                                    -1.0f + ((y + 1) * 2) * height_interval,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+                                                    -1.0f + ((y + 1) * 2) * height_interval,
+                                                    0.0f);
+                    vertices[i++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+                                                    -1.0f + ((y * 2) + 1) * height_interval,
+                                                    0.0f);
+                }
+            }
+        }
+    }
+
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+}
+
+int main(int argc, char *argv[]) {
+    cells = malloc(width * sizeof(cell_t**));
 
     for (int x = 0; x < width; x++){
+        cells[x] = malloc(height * sizeof(cell_t**));
         for(int y = 0; y < height; y++){
             cells[x][y] = create_cell(x,y);
         }
     }
 
-    load_maze_from_python(width, height,cells);
+    load_maze_from_python(width, height, cells);
+
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
+    glutInitWindowSize(1024, 768);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Pymazingl");
+
+    initialize_glut_callbacks();
+
+    GLenum res = glewInit();
+    if (res != GLEW_OK) {
+        fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
+        return 1;
+    }
+
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    create_vertex_buffer();
+
+    glutMainLoop();
 
     return 0;
 }
