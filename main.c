@@ -9,7 +9,7 @@
 cell_t ***cells;
 int width = 20, height = 20, connections = 0;
 
-int load_maze_from_python( int width, int height, cell_t *** cells) {
+int load_maze_from_python(int width, int height, cell_t *** cells) {
     setenv("PYTHONPATH",".",1);
 
     PyObject *pName, *pModule, *pFunc;
@@ -104,7 +104,7 @@ vector3f create_vector3f(float x, float y, float z) {
     return vector;
 }
 
-static void render_scene_cb()
+void render_scene_cb()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -119,12 +119,12 @@ static void render_scene_cb()
     glutSwapBuffers();
 }
 
-static void initialize_glut_callbacks()
+void initialize_glut_callbacks()
 {
     glutDisplayFunc(render_scene_cb);
 }
 
-static void add_cell_vertices(
+void add_cell_vertices(
      int x,
      int y,
      float width_interval,
@@ -153,7 +153,7 @@ static void add_cell_vertices(
 }
 
 // Adds the vertices for a vertical connection on top of the cell at (x,y)
-static void add_vertical_connection_vertices(
+void add_vertical_connection_vertices(
     int x,
     int y,
     float width_interval,
@@ -183,7 +183,7 @@ static void add_vertical_connection_vertices(
 }
 
 // Adds the vertices for a horizontal connection to the right of the cell at (x,y)
-static void add_horizontal_connection_vertices(
+void add_horizontal_connection_vertices(
     int x,
     int y,
     float width_interval,
@@ -212,7 +212,7 @@ static void add_horizontal_connection_vertices(
                                     0.0f);
 }
 
-static void create_vertex_buffer()
+void create_vertex_buffer()
 {
     int cell_count = width * height;
     int connection_count = 0;
