@@ -261,7 +261,6 @@ int main(int argc, char *argv[]) {
 
     load_maze_from_python(width, height, cells);
 
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
     glutInitWindowSize(1024, 768);
