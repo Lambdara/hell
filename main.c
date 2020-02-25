@@ -4,9 +4,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <GL/glew.h>
-#include <GL/freeglut.h>
+#include <GLFW/glfw3.h>
 
 cell_t ***cells;
+GLFWwindow* window;
 int width = 20, height = 20, connections = 0;
 
 int load_maze_from_python(int width, int height, cell_t *** cells) {
@@ -104,8 +105,7 @@ vector3f create_vector3f(float x, float y, float z) {
     return vector;
 }
 
-void render_scene_cb()
-{
+void render_scene_cb() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glEnableVertexAttribArray(0);
@@ -116,12 +116,7 @@ void render_scene_cb()
 
     glDisableVertexAttribArray(0);
 
-    glutSwapBuffers();
-}
-
-void initialize_glut_callbacks()
-{
-    glutDisplayFunc(render_scene_cb);
+    glfwSwapBuffers(window);
 }
 
 void add_cell_vertices(
@@ -243,7 +238,6 @@ void create_vertex_buffer()
             }
         }
     }
-
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -261,13 +255,19 @@ int main(int argc, char *argv[]) {
 
     load_maze_from_python(width, height, cells);
 
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA);
-    glutInitWindowSize(1024, 768);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow("Hell");
+    if (!glfwInit()) {
+        printf("GLFW failed to init\n");
+        return -1;
+    }
 
-    initialize_glut_callbacks();
+    window = glfwCreateWindow(1024, 768, "Hell", NULL, NULL);
+    if (!window) {
+        printf("Window failed to create");
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
 
     GLenum res = glewInit();
     if (res != GLEW_OK) {
@@ -279,7 +279,10 @@ int main(int argc, char *argv[]) {
 
     create_vertex_buffer();
 
-    glutMainLoop();
+    while(!glfwWindowShouldClose(window)) {
+        render_scene_cb();
+        glfwPollEvents();
+    }
 
     return 0;
 }
