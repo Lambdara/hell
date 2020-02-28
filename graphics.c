@@ -1,5 +1,23 @@
 #include "graphics.h"
 
+const char *vertexShaderSource = "#version 330\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 vertexColor;\n"
+    "out vec3 fragmentColor;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   fragmentColor = vertexColor;\n"
+    "}\0";
+
+const char *fragmentShaderSource = "#version 330\n"
+    "in vec3 fragmentColor;\n"
+    "out vec3 FragColor;\n"
+    "void main()\n"
+    "{\n"
+    "    FragColor = fragmentColor;\n"
+    "}\n";
+
 vector3f create_vector3f(float x, float y, float z) {
     vector3f vector = {x, y, z};
     return vector;
@@ -11,10 +29,14 @@ void render_scene_cb(GLFWwindow *window, int width, int height, int connections)
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, cbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     glDrawArrays(GL_TRIANGLES, 0, (width*height+connections)*6);
 
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
 
     glfwSwapBuffers(window);
 }
@@ -107,6 +129,46 @@ void add_horizontal_connection_vertices(
                                     0.0f);
 }
 
+void add_shaders() {
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+    int  success;
+    char info_log[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
+        fprintf(stderr,"Shader compilation error: %s\n", info_log);
+    }
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
+        fprintf(stderr,"Shader compilation error: %s\n", info_log);
+    }
+
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glGetProgramInfoLog(shaderProgram, 512, NULL, info_log);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
+        fprintf(stderr,"Shader program error: %s\n", info_log);
+    }
+
+    glUseProgram(shaderProgram);
+
+    fprintf(stderr, "Shaders added\n");
+}
+
 int create_vertex_buffer(int width, int height, cell_t ***cells) {
     int cell_count = width * height;
     int connection_count = 0;
@@ -119,6 +181,7 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     int connections = connection_count/2;
 
     vector3f vertices[(cell_count+connection_count)*6];
+    vector3f colors[(cell_count+connection_count)*6];
 
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
@@ -126,9 +189,17 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     int i = 0;
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
+            for (int j = i; j < i + 6; j++)
+                if (cells[x][y]->visited) {
+                    colors[j] = create_vector3f(1.0f,0.0f,0.0f);
+                }
+                else
+                    colors[j] = create_vector3f(0.0f,0.0f,1.0f);
             add_cell_vertices(x, y, width_interval, height_interval, vertices, &i);
             for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
                 cell_t* neighbour = cells[x][y]->neighbours[n];
+                for (int j = i; j < i + 6; j++)
+                    colors[j] = create_vector3f(1.0f,1.0f,1.0f);
                 if (neighbour->x == x + 1) {
                     add_horizontal_connection_vertices(x, y, width_interval, height_interval, vertices, &i);
                 } else if (neighbour->y == y + 1) {
@@ -140,6 +211,9 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &cbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
     // TODO: Communicate connections in a less ugly way
     return connections;

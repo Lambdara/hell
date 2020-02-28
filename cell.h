@@ -5,6 +5,7 @@ typedef struct cell_t {
     int x; // x coord of this cell
     int y; // y coord of this cell
     int neighbour_count; // Size of the following array
+    int visited; // Whether this cell has been requested or not
     struct cell_t **neighbours; // array of pointers to neighbours
 } cell_t;
 

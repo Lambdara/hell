@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#define SOCKET_PORT 6824
+#define SOCKET_PORT 6826
 #define CONNECTION_BUFFER_SIZE 512
 
 int connect_to_client(int *);

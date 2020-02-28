@@ -2,7 +2,7 @@ import socket
 import struct
 
 host = 'localhost'
-port = 6824
+port = 6826
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((host,port))
