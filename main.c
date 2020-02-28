@@ -11,6 +11,11 @@ cell_t ***cells;
 GLFWwindow *window;
 int width = 20, height = 20, connections = 0;
 
+struct msg {
+    int x;
+    int y;
+};
+
 int main(int argc, char *argv[]) {
     // Initialize the maze
     cells = malloc(width * sizeof(cell_t**));
@@ -32,13 +37,22 @@ int main(int argc, char *argv[]) {
         int sockfd;
         int conn_fd = connect_to_client(&sockfd);
 
-        char buffer[CONNECTION_BUFFER_SIZE];
+        struct msg message;
         int nbytes;
 
         // Spy stub code for communication with client
-        while((nbytes = read(conn_fd, buffer, CONNECTION_BUFFER_SIZE)) > 0) {
-            if (nbytes > 0)
-                printf("%i bytes: %s\n", nbytes, buffer);
+        while((nbytes = read(conn_fd, &message, sizeof(message))) > 0) {
+            if (nbytes > 0) {
+                printf("(%i,%i)\n", message.x, message.y);
+                send(conn_fd, &(cells[message.x][message.y]->neighbour_count), sizeof(int), 0);
+                for (int i = 0; i < cells[message.x][message.y]->neighbour_count; i++) {
+                    struct msg response = {
+                                           cells[message.x][message.y]->neighbours[i]->x,
+                                           cells[message.x][message.y]->neighbours[i]->y
+                    };
+                    send(conn_fd, &response, sizeof(response), 0);
+                }
+            }
         }
 
         // Print the error if we encounter one
