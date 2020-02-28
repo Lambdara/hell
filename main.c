@@ -29,6 +29,7 @@ void *do_networking(void *vars) {
         if (nbytes > 0) {
             printf("(%i,%i)\n", message.x, message.y);
             cells[message.x][message.y]->visited = 1;
+            send(conn_fd, &(cells[message.x][message.y]->neighbour_count), sizeof(int), 0);
             for (int i = 0; i < cells[message.x][message.y]->neighbour_count; i++) {
                 struct msg response = {
                                        cells[message.x][message.y]->neighbours[i]->x,
