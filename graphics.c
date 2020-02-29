@@ -172,14 +172,8 @@ void add_shaders() {
 
 int create_vertex_buffer(int width, int height, cell_t ***cells) {
     int cell_count = width * height;
-    int connection_count = 0;
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            connection_count += cells[x][y]->neighbour_count;
-        }
-    }
-
-    int connections = connection_count/2;
+    // This assumes the nodes of our maze form a tree
+    int connections = cell_count - 1;
 
     vector3f vertices[(cell_count+connections)*6];
     vector3f colors[(cell_count+connections)*6];
