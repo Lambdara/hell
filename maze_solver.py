@@ -18,7 +18,7 @@ else:
     sleep_time = 0.0
 
 def get_expected_cost(path):
-    return len(path) + abs(goal[0] - path[-1][0]) + abs(goal[1] - path[-1][1])
+    return abs(goal[0] - path[-1][0]) + abs(goal[1] - path[-1][1])
 
 def get_neighbours(s,x,y):
     sleep(sleep_time)
