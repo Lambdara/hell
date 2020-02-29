@@ -194,10 +194,10 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
         for (int y = 0; y < height; y++) {
             for (int j = i; j < i + 6; j++)
                 if (cells[x][y]->visited) {
-                    colors[j] = create_vector3f(1.0f,0.0f,0.0f);
+                    colors[j] = create_vector3f(1.0f,0.3f,0.3f);
                 }
                 else
-                    colors[j] = create_vector3f(0.0f,0.0f,1.0f);
+                    colors[j] = create_vector3f(0.8f,0.8f,1.0f);
             add_cell_vertices(x, y, width_interval, height_interval, vertices, &i);
             for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
                 cell_t* neighbour = cells[x][y]->neighbours[n];
