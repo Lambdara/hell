@@ -1,6 +1,7 @@
 import socket
 import struct
 from time import sleep
+import sys
 
 host = 'localhost'
 port = 6826
@@ -11,10 +12,16 @@ goal = (0,0)
 # Save paths as [path nodes]
 paths = [[start]]
 
+if len(sys.argv) > 1:
+    sleep_time = float(sys.argv[1])
+else:
+    sleep_time = 0.0
+
 def get_expected_cost(path):
     return len(path) + abs(goal[0] - path[-1][0]) + abs(goal[1] - path[-1][1])
 
 def get_neighbours(s,x,y):
+    sleep(sleep_time)
     my_struct = struct.pack('ii',x,y)
     s.send(my_struct)
     neighbour_count = struct.unpack('i', s.recv(struct.calcsize('i')))[0]
