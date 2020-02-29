@@ -181,8 +181,8 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
 
     int connections = connection_count/2;
 
-    vector3f vertices[(cell_count+connection_count)*6];
-    vector3f colors[(cell_count+connection_count)*6];
+    vector3f vertices[(cell_count+connections)*6];
+    vector3f colors[(cell_count+connections)*6];
 
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
