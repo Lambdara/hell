@@ -81,23 +81,22 @@ void add_vertical_connection_vertices(
     vector3f *vertices,
     int *i
     ) {
-    float width_interval_third = width_interval / 3;
-    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval,
                                        -1.0f + ((y * 2) + 1) * height_interval,
                                        0.0f);
-    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
                                        -1.0f + ((y * 2) + 1) * height_interval,
                                        0.0f);
-    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
                                        -1.0f + ((y + 1) * 2) * height_interval,
                                        0.0f);
-    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval - width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
                                        -1.0f + ((y + 1) * 2) * height_interval,
                                        0.0f);
-    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval,
                                        -1.0f + ((y + 1) * 2) * height_interval,
                                        0.0f);
-    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval + width_interval_third,
+    vertices[(*i)++] = create_vector3f(-1.0f + (x * 2) * width_interval,
                                        -1.0f + ((y * 2) + 1) * height_interval,
                                        0.0f);
 }
@@ -111,25 +110,24 @@ void add_horizontal_connection_vertices(
     vector3f *vertices,
     int *i
     ) {
-    float height_interval_third = height_interval / 3;
     vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
-                                    -1.0f + height_interval * 2 * y + height_interval_third,
-                                    0.0f);
+                                       -1.0f + height_interval * 2 * y,
+                                       0.0f);
     vertices[(*i)++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
-                                    -1.0f + height_interval * 2 * y + height_interval_third,
-                                    0.0f);
+                                       -1.0f + height_interval * 2 * y,
+                                       0.0f);
     vertices[(*i)++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
-                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
-                                    0.0f);
+                                       -1.0f + ((y * 2) + 1) * height_interval,
+                                       0.0f);
     vertices[(*i)++] = create_vector3f(-1.0f + ((x + 1) * 2) * width_interval,
-                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
-                                    0.0f);
+                                       -1.0f + ((y * 2) + 1) * height_interval,
+                                       0.0f);
     vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
-                                    -1.0f + ((y * 2) + 1) * height_interval - height_interval_third,
-                                    0.0f);
+                                       -1.0f + ((y * 2) + 1) * height_interval,
+                                       0.0f);
     vertices[(*i)++] = create_vector3f(-1.0f + ((x * 2) + 1) * width_interval,
-                                    -1.0f + height_interval * 2 * y + height_interval_third,
-                                    0.0f);
+                                       -1.0f + height_interval * 2 * y,
+                                       0.0f);
 }
 
 void add_shaders() {
