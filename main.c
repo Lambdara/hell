@@ -9,12 +9,25 @@
 
 cell_t ***cells;
 GLFWwindow *window;
-int width = 20, height = 20, connections = 0;
+int width = 96, height = 54, connections = 0;
 
 struct msg {
     int x;
     int y;
 };
+
+void send_neighbours(int conn_fd, int x, int y) {
+    struct msg response;
+
+    int neighbour_count = cells[x][y]->neighbour_count;
+
+    send(conn_fd, &neighbour_count, sizeof(neighbour_count), 0);
+    for (int i = 0; i < neighbour_count; i++) {
+        response.x = cells[x][y]->neighbours[i]->x;
+        response.y = cells[x][y]->neighbours[i]->y;
+        send(conn_fd, &response, sizeof(response), 0);
+    }
+}
 
 void *do_networking(void *vars) {
     // Connect to client
@@ -24,18 +37,23 @@ void *do_networking(void *vars) {
     struct msg message;
     int nbytes;
 
-    // Spy stub code for communication with client
+    message.x = width;
+    message.y = height;
+    send(conn_fd, &message, sizeof(message), 0);
     while((nbytes = read(conn_fd, &message, sizeof(message))) > 0) {
         if (nbytes > 0) {
-            printf("(%i,%i)\n", message.x, message.y);
             cells[message.x][message.y]->visited = 1;
-            send(conn_fd, &(cells[message.x][message.y]->neighbour_count), sizeof(int), 0);
-            for (int i = 0; i < cells[message.x][message.y]->neighbour_count; i++) {
-                struct msg response = {
-                                       cells[message.x][message.y]->neighbours[i]->x,
-                                       cells[message.x][message.y]->neighbours[i]->y
-                };
-                send(conn_fd, &response, sizeof(response), 0);
+
+            // Asking about the goal indicates wanting to give the answer
+            if (message.x != width - 1 || message.y != height -1)
+                send_neighbours(conn_fd, message.x, message.y);
+            else {
+                int incoming_length;
+                read(conn_fd, &incoming_length, sizeof(incoming_length));
+                for (int i = 0; i < incoming_length; i++) {
+                    read(conn_fd, &message, sizeof(message));
+                    cells[message.x][message.y]->answer = 1;
+                }
             }
         }
     }
@@ -73,7 +91,7 @@ int main(int argc, char *argv[]) {
         printf("GLFW failed to init\n");
         return -1;
     }
-    window = glfwCreateWindow(1024, 768, "Hell", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Hell", NULL, NULL);
     if (!window) {
         printf("Window failed to create\n");
         glfwTerminate();

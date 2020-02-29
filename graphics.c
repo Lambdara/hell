@@ -191,16 +191,23 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
             for (int j = i; j < i + 6; j++)
-                if (cells[x][y]->visited) {
+                if (cells[x][y]->answer)
+                    colors[j] = create_vector3f(0.0f,0.392f,0.0f);
+                else if (cells[x][y]->visited)
                     colors[j] = create_vector3f(1.0f,0.3f,0.3f);
-                }
                 else
                     colors[j] = create_vector3f(0.8f,0.8f,1.0f);
             add_cell_vertices(x, y, width_interval, height_interval, vertices, &i);
             for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
                 cell_t* neighbour = cells[x][y]->neighbours[n];
-                for (int j = i; j < i + 6; j++)
-                    colors[j] = create_vector3f(1.0f,1.0f,1.0f);
+                for (int j = i; j < i + 6; j++){
+                    if (cells[x][y]->answer && neighbour->answer)
+                        colors[j] = create_vector3f(0.0f,0.392f,0.0f);
+                    else if ((cells[x][y]->visited || neighbour->answer) && (cells[x][y]->answer || neighbour->visited))
+                        colors[j] = create_vector3f(1.0f,0.3f,0.3f);
+                    else
+                        colors[j] = create_vector3f(0.8f,0.8f,1.0f);
+                }
                 if (neighbour->x == x + 1) {
                     add_horizontal_connection_vertices(x, y, width_interval, height_interval, vertices, &i);
                 } else if (neighbour->y == y + 1) {

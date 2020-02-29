@@ -7,6 +7,7 @@ cell_t *create_cell(int x, int y){
     cell->x = x;
     cell->y = y;
     cell->visited = 0;
+    cell->answer = 0;
 
     return cell;
 }
