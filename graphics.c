@@ -175,8 +175,8 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     // This assumes the nodes of our maze form a tree
     int connections = cell_count - 1;
 
-    vector3f vertices[(cell_count+connections)*6];
-    vector3f colors[(cell_count+connections)*6];
+    vector3f vertices[(cell_count + connections + 1)*6];
+    vector3f colors[(cell_count + connections + 1)*6];
 
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
