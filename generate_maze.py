@@ -44,6 +44,10 @@ def generate_maze(width,height,start=(0,0)):
     visited = [start_cell]
 
     while stack:
+        i = randint(0,len(stack)-1)
+
+        stack[-1], stack[i] = stack[i], stack[-1]
+
         from_cell, to_cell = stack.pop()
         if to_cell not in visited:
             to_cell.connected_neighbours.append(from_cell)
@@ -52,8 +56,7 @@ def generate_maze(width,height,start=(0,0)):
 
             for neighbour in to_cell.neighbours:
                 if neighbour not in visited:
-                    stack.insert(randint(0,len(stack)), (to_cell,neighbour))
-
+                    stack.append((to_cell,neighbour))
 
     return [[[(neighbour.x,neighbour.y) for neighbour in cells[x][y].connected_neighbours]
              for y in range(height)]
