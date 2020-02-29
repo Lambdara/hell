@@ -203,7 +203,7 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
                 for (int j = i; j < i + 6; j++){
                     if (cells[x][y]->answer && neighbour->answer)
                         colors[j] = create_vector3f(0.0f,0.392f,0.0f);
-                    else if ((cells[x][y]->visited || neighbour->answer) && (cells[x][y]->answer || neighbour->visited))
+                    else if ((cells[x][y]->visited || cells[x][y]->answer) && (neighbour->visited || neighbour->answer))
                         colors[j] = create_vector3f(1.0f,0.3f,0.3f);
                     else
                         colors[j] = create_vector3f(0.8f,0.8f,1.0f);
