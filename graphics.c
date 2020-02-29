@@ -175,6 +175,7 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     // This assumes the nodes of our maze form a tree
     int connections = cell_count - 1;
 
+    // Why +1, tho?
     vector3f vertices[(cell_count + connections + 1)*6];
     vector3f colors[(cell_count + connections + 1)*6];
 
