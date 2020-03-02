@@ -222,5 +222,7 @@ void create_color_buffer(int width, int height, cell_t ***cells) {
             }
         }
     }
+
+    glBindBuffer(GL_ARRAY_BUFFER, cbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_DYNAMIC_DRAW);
 }
