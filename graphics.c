@@ -38,8 +38,6 @@ void render_scene_cb(GLFWwindow *window, int width, int height) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
-    glDeleteBuffers(1, &cbo);
-
     glfwSwapBuffers(window);
 }
 
@@ -224,7 +222,5 @@ void create_color_buffer(int width, int height, cell_t ***cells) {
             }
         }
     }
-    glGenBuffers(1, &cbo);
-    glBindBuffer(GL_ARRAY_BUFFER, cbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_DYNAMIC_DRAW);
 }
