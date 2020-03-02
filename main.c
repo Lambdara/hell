@@ -124,5 +124,8 @@ int main(int argc, char *argv[]) {
         glfwPollEvents();
     }
 
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &cbo);
+
     return 0;
 }
