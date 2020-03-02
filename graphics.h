@@ -24,6 +24,8 @@ void add_horizontal_connection_vertices(int, int, float, float, vector3f *, int 
 
 void create_vertex_buffer(int, int, cell_t ***);
 
+void create_color_buffer(int, int, cell_t ***);
+
 void add_shaders();
 
 #endif

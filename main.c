@@ -111,10 +111,12 @@ int main(int argc, char *argv[]) {
     // Create the image
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     create_vertex_buffer(width, height, cells);
+    create_color_buffer(width, height, cells);
 
     // Render the screen until we close
     while(!glfwWindowShouldClose(window)) {
         create_vertex_buffer(width,height,cells);
+        create_color_buffer(width, height, cells);
         render_scene_cb(window, width, height);
         glfwPollEvents();
     }

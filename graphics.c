@@ -177,7 +177,6 @@ void create_vertex_buffer(int width, int height, cell_t ***cells) {
 
     // Why +1, tho?
     vector3f vertices[(cell_count + connections + 1)*6];
-    vector3f colors[(cell_count + connections + 1)*6];
 
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
@@ -185,24 +184,9 @@ void create_vertex_buffer(int width, int height, cell_t ***cells) {
     int i = 0;
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
-            for (int j = i; j < i + 6; j++)
-                if (cells[x][y]->answer)
-                    colors[j] = create_vector3f(0.0f,0.392f,0.0f);
-                else if (cells[x][y]->visited)
-                    colors[j] = create_vector3f(1.0f,0.3f,0.3f);
-                else
-                    colors[j] = create_vector3f(0.8f,0.8f,1.0f);
             add_cell_vertices(x, y, width_interval, height_interval, vertices, &i);
             for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
                 cell_t* neighbour = cells[x][y]->neighbours[n];
-                for (int j = i; j < i + 6; j++){
-                    if (cells[x][y]->answer && neighbour->answer)
-                        colors[j] = create_vector3f(0.0f,0.392f,0.0f);
-                    else if ((cells[x][y]->visited || cells[x][y]->answer) && (neighbour->visited || neighbour->answer))
-                        colors[j] = create_vector3f(1.0f,0.3f,0.3f);
-                    else
-                        colors[j] = create_vector3f(0.8f,0.8f,1.0f);
-                }
                 if (neighbour->x == x + 1) {
                     add_horizontal_connection_vertices(x, y, width_interval, height_interval, vertices, &i);
                 } else if (neighbour->y == y + 1) {
@@ -214,6 +198,43 @@ void create_vertex_buffer(int width, int height, cell_t ***cells) {
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+}
+
+void create_color_buffer(int width, int height, cell_t ***cells) {
+    int cell_count = width * height;
+    // This assumes the nodes of our maze form a tree
+    int connections = cell_count - 1;
+
+    // Why +1, tho?
+    vector3f colors[(cell_count + connections + 1)*6];
+
+    int i = 0;
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int j = i; j < i + 6; j++)
+                if (cells[x][y]->answer)
+                    colors[j] = create_vector3f(0.0f,0.392f,0.0f);
+                else if (cells[x][y]->visited)
+                    colors[j] = create_vector3f(1.0f,0.3f,0.3f);
+                else
+                    colors[j] = create_vector3f(0.8f,0.8f,1.0f);
+            i += 6;
+            for (int n = 0; n < cells[x][y]->neighbour_count; n++) {
+                cell_t* neighbour = cells[x][y]->neighbours[n];
+                if (neighbour->x == x + 1 || neighbour->y == y + 1){
+                    for (int j = i; j < i + 6; j++){
+                        if (cells[x][y]->answer && neighbour->answer)
+                            colors[j] = create_vector3f(0.0f,0.392f,0.0f);
+                        else if ((cells[x][y]->visited || cells[x][y]->answer) && (neighbour->visited || neighbour->answer))
+                            colors[j] = create_vector3f(1.0f,0.3f,0.3f);
+                        else
+                            colors[j] = create_vector3f(0.8f,0.8f,1.0f);
+                    }
+                    i += 6;
+                }
+            }
+        }
+    }
     glGenBuffers(1, &cbo);
     glBindBuffer(GL_ARRAY_BUFFER, cbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
