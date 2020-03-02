@@ -9,7 +9,7 @@
 
 cell_t ***cells;
 GLFWwindow *window;
-int width = 96, height = 54, connections = 0;
+int width = 96, height = 54;
 
 struct msg {
     int x;
@@ -110,12 +110,12 @@ int main(int argc, char *argv[]) {
 
     // Create the image
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    connections = create_vertex_buffer(width, height, cells);
+    create_vertex_buffer(width, height, cells);
 
     // Render the screen until we close
     while(!glfwWindowShouldClose(window)) {
         create_vertex_buffer(width,height,cells);
-        render_scene_cb(window, width, height, connections);
+        render_scene_cb(window, width, height);
         glfwPollEvents();
     }
 

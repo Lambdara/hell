@@ -23,7 +23,7 @@ vector3f create_vector3f(float x, float y, float z) {
     return vector;
 }
 
-void render_scene_cb(GLFWwindow *window, int width, int height, int connections) {
+void render_scene_cb(GLFWwindow *window, int width, int height) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glEnableVertexAttribArray(0);
@@ -33,7 +33,7 @@ void render_scene_cb(GLFWwindow *window, int width, int height, int connections)
     glBindBuffer(GL_ARRAY_BUFFER, cbo);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, (width*height+connections)*6);
+    glDrawArrays(GL_TRIANGLES, 0, (width*height*2-1)*6);
 
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
@@ -170,7 +170,7 @@ void add_shaders() {
     fprintf(stderr, "Shaders added\n");
 }
 
-int create_vertex_buffer(int width, int height, cell_t ***cells) {
+void create_vertex_buffer(int width, int height, cell_t ***cells) {
     int cell_count = width * height;
     // This assumes the nodes of our maze form a tree
     int connections = cell_count - 1;
@@ -217,7 +217,4 @@ int create_vertex_buffer(int width, int height, cell_t ***cells) {
     glGenBuffers(1, &cbo);
     glBindBuffer(GL_ARRAY_BUFFER, cbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-    // TODO: Communicate connections in a less ugly way
-    return connections;
 }

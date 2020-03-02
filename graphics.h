@@ -14,7 +14,7 @@ typedef struct {
 
 vector3f create_vector3f(float, float, float);
 
-void render_scene_cb(GLFWwindow *, int, int, int);
+void render_scene_cb(GLFWwindow *, int, int);
 
 void add_cell_vertices(int, int, float, float, vector3f *, int *);
 
@@ -22,7 +22,7 @@ void add_vertical_connection_vertices(int, int, float, float, vector3f *, int *)
 
 void add_horizontal_connection_vertices(int, int, float, float, vector3f *, int *);
 
-int create_vertex_buffer(int, int, cell_t ***);
+void create_vertex_buffer(int, int, cell_t ***);
 
 void add_shaders();
 
