@@ -38,7 +38,6 @@ void render_scene_cb(GLFWwindow *window, int width, int height) {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
-    glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &cbo);
 
     glfwSwapBuffers(window);

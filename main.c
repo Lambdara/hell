@@ -115,7 +115,6 @@ int main(int argc, char *argv[]) {
 
     // Render the screen until we close
     while(!glfwWindowShouldClose(window)) {
-        create_vertex_buffer(width,height,cells);
         create_color_buffer(width, height, cells);
         render_scene_cb(window, width, height);
         glfwPollEvents();
