@@ -110,8 +110,11 @@ int main(int argc, char *argv[]) {
 
     // Create the image
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    create_vertex_buffer(width, height, cells);
+
     glGenBuffers(1, &cbo);
+    glGenBuffers(1, &vbo);
+
+    create_vertex_buffer(width, height, cells);
     create_color_buffer(width, height, cells);
 
     // Render the screen until we close
