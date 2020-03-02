@@ -171,12 +171,7 @@ void add_shaders() {
 }
 
 void create_vertex_buffer(int width, int height, cell_t ***cells) {
-    int cell_count = width * height;
-    // This assumes the nodes of our maze form a tree
-    int connections = cell_count - 1;
-
-    // Why +1, tho?
-    vector3f vertices[(cell_count + connections + 1)*6];
+    vector3f vertices[(width*height*2-1)*6];
 
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
@@ -201,12 +196,7 @@ void create_vertex_buffer(int width, int height, cell_t ***cells) {
 }
 
 void create_color_buffer(int width, int height, cell_t ***cells) {
-    int cell_count = width * height;
-    // This assumes the nodes of our maze form a tree
-    int connections = cell_count - 1;
-
-    // Why +1, tho?
-    vector3f colors[(cell_count + connections + 1)*6];
+    vector3f colors[(width*height*2-1)*6];
 
     int i = 0;
     for (int x = 0; x < width; x++) {
