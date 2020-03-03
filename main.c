@@ -71,6 +71,10 @@ void *do_networking(void *vars) {
     return NULL;
 }
 
+void resize_framebuffer(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 int main(int argc, char *argv[]) {
     // Initialize the maze
     cells = malloc(width * sizeof(cell_t**));
@@ -98,6 +102,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, resize_framebuffer);
 
     // Initialize GLEW
     GLenum res = glewInit();
