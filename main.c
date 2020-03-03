@@ -112,6 +112,8 @@ int main(int argc, char *argv[]) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     glGenBuffers(1, &cbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vector3f)*6*(width*height*2-1), NULL, GL_DYNAMIC_DRAW);
     glGenBuffers(1, &vbo);
 
     create_vertex_buffer(width, height, cells);
