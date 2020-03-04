@@ -1,6 +1,8 @@
 #ifndef CELL_H
 #define CELL_H
 
+#include <stdlib.h>
+
 typedef struct cell_t {
     int x; // x coord of this cell
     int y; // y coord of this cell

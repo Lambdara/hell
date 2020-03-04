@@ -1,6 +1,4 @@
 #include "cell.h"
-#include "graphics.h"
-#include <stdlib.h>
 
 cell_t *create_cell(int x, int y){
     cell_t *cell = malloc(sizeof(cell_t));
