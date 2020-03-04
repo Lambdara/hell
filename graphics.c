@@ -1,23 +1,5 @@
 #include "graphics.h"
 
-const char *vertexShaderSource = "#version 330\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "layout (location = 1) in vec3 vertexColor;\n"
-    "out vec3 fragmentColor;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "   fragmentColor = vertexColor;\n"
-    "}\0";
-
-const char *fragmentShaderSource = "#version 330\n"
-    "in vec3 fragmentColor;\n"
-    "out vec3 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = fragmentColor;\n"
-    "}\n";
-
 vector3f create_vector3f(float x, float y, float z) {
     vector3f vector = {x, y, z};
     return vector;
@@ -128,42 +110,75 @@ void add_horizontal_connection_vertices(
 }
 
 void add_shaders() {
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+    // Read vertex shader from file
+    char *vertex_shader_source;
+    FILE *vertex_shader_file = fopen(VERTEX_SHADER_PATH, "rb");
+    if (vertex_shader_file) {
+        fseek(vertex_shader_file, 0, SEEK_END);
+        long length = ftell(vertex_shader_file);
+        fseek (vertex_shader_file, 0, SEEK_SET);
+        vertex_shader_source = malloc (length);
+        fread(vertex_shader_source, 1, length, vertex_shader_file);
+        fclose(vertex_shader_file);
+    } else {
+        fprintf(stderr, "Could not open vertex shader file\n");
+        exit(1);
+    }
+    const char *vertex_shader_content = vertex_shader_source;
+
+    // Compile vertex shader
+    unsigned int vertex_shader;
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_content, NULL);
+    glCompileShader(vertex_shader);
     int  success;
     char info_log[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
-        fprintf(stderr,"Shader compilation error: %s\n", info_log);
-    }
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
+        glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
         fprintf(stderr,"Shader compilation error: %s\n", info_log);
     }
 
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    glGetProgramInfoLog(shaderProgram, 512, NULL, info_log);
+    // Load fragment shader from file
+    char *fragment_shader_source;
+    FILE *fragment_shader_file = fopen(FRAGMENT_SHADER_PATH, "rb");
+    if (fragment_shader_file) {
+        fseek (fragment_shader_file, 0, SEEK_END);
+        long length = ftell(fragment_shader_file);
+        fseek (fragment_shader_file, 0, SEEK_SET);
+        fragment_shader_source = malloc(length);
+        fread(fragment_shader_source, 1, length, vertex_shader_file);
+        fclose(fragment_shader_file);
+    } else {
+        fprintf(stderr, "Could not open fragment shader file\n");
+        exit(10);
+    }
+    const char *fragment_shader_content = fragment_shader_source;
+    
+    // Compile fragment_shader
+    unsigned int fragment_shader;
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_content, NULL);
+    glCompileShader(fragment_shader);
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        glGetShaderInfoLog(vertexShader, 512, NULL, info_log);
+        glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
+        fprintf(stderr,"Shader compilation error: %s\n", info_log);
+    }
+
+    // Link shader program
+    unsigned int shader_program;
+    shader_program = glCreateProgram();
+    glAttachShader(shader_program, vertex_shader);
+    glAttachShader(shader_program, fragment_shader);
+    glLinkProgram(shader_program);
+    glGetProgramInfoLog(shader_program, 512, NULL, info_log);
+    if (!success) {
+        glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
         fprintf(stderr,"Shader program error: %s\n", info_log);
     }
 
-    glUseProgram(shaderProgram);
-
+    glUseProgram(shader_program);
     fprintf(stderr, "Shaders added\n");
 }
 

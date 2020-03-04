@@ -4,7 +4,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "cell.h"
+
+#define VERTEX_SHADER_PATH "vertexshader.vs"
+#define FRAGMENT_SHADER_PATH "fragmentshader.fs"
 
 GLuint vbo, cbo;
 
