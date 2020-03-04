@@ -179,7 +179,6 @@ void add_shaders() {
     }
 
     glUseProgram(shader_program);
-    fprintf(stderr, "Shaders added\n");
 }
 
 void create_vertex_buffer(int width, int height, cell_t ***cells) {

@@ -66,7 +66,6 @@ void *do_networking(void *vars) {
 
     // Close when we're done
     close(sockfd);
-    printf("Socket closed\n");
 
     return NULL;
 }

@@ -6,10 +6,8 @@ int connect_to_client(int *sockfd){
 
     *sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (*sockfd == -1) {
-        printf("Socket failed to initialize\n");
+        fprintf(stderr, "Socket failed to initialize\n");
         return -1;
-    } else {
-        printf("Socket created\n");
     }
     bzero(&serveraddr, sizeof(serveraddr));
 
@@ -18,27 +16,21 @@ int connect_to_client(int *sockfd){
     serveraddr.sin_port = htons(SOCKET_PORT);
 
     if ((bind(*sockfd, (struct sockaddr*)&serveraddr, sizeof(serveraddr))) != 0) {
-        printf("Socket failed to bind\n");
+        fprintf(stderr, "Socket failed to bind\n");
         return -1;
-    } else {
-        printf("Socket bound\n");
     }
 
     if ((listen(*sockfd, 5)) != 0) {
-        printf("Socket failed to start listening\n");
+        fprintf(stderr, "Socket failed to start listening\n");
         return -1;
-    } else {
-        printf("Socket started listening\n");
     }
 
     len = sizeof(client);
 
     int conn_fd = accept(*sockfd, (struct sockaddr *)(&client), &len);
     if (conn_fd < 0) {
-        printf("Socket failed to accept\n");
+        fprintf(stderr, "Socket failed to accept\n");
         return -1;
-    } else {
-        printf("Socket accepted\n");
     }
 
     return conn_fd;
