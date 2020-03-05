@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
     }
 
     load_maze_from_python(width, height, cells);
+    initialize_graphics_buffers(width, height);
 
     pthread_t thread_id;
     pthread_create(&thread_id, NULL, do_networking, NULL);

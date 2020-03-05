@@ -16,6 +16,11 @@ typedef struct {
     float x, y, z;
 } vector3f;
 
+int vbuffer_size;
+vector3f *colors;
+vector3f *vertices;
+
+
 vector3f create_vector3f(float, float, float);
 
 void render_scene_cb(GLFWwindow *, int, int);
@@ -31,5 +36,7 @@ void create_vertex_buffer(int, int, cell_t ***);
 void create_color_buffer(int, int, cell_t ***);
 
 void add_shaders();
+
+void initialize_graphics_buffers(int, int);
 
 #endif

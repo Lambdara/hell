@@ -182,8 +182,6 @@ void add_shaders() {
 }
 
 void create_vertex_buffer(int width, int height, cell_t ***cells) {
-    vector3f vertices[(width*height*2-1)*6];
-
     float width_interval = 2.0 / (width * 2.0 - 1.0);
     float height_interval = 2.0 / (height * 2.0 - 1.0);
 
@@ -202,12 +200,10 @@ void create_vertex_buffer(int width, int height, cell_t ***cells) {
         }
     }
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vbuffer_size, vertices, GL_STATIC_DRAW);
 }
 
 void create_color_buffer(int width, int height, cell_t ***cells) {
-    vector3f colors[(width*height*2-1)*6];
-
     int i = 0;
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < height; y++) {
@@ -237,5 +233,11 @@ void create_color_buffer(int width, int height, cell_t ***cells) {
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, cbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(colors), colors);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vbuffer_size, colors);
+}
+
+void initialize_graphics_buffers(int width, int height) {
+    vbuffer_size = (width*height*2-1)*6*sizeof(vector3f);
+    colors = malloc(vbuffer_size);
+    vertices = malloc(vbuffer_size);
 }
