@@ -1,6 +1,6 @@
 # Hell
 
-Hell is an experiment in connecting C, Python (imbedded in C), and OpenGL (through C).
+Hell is an experiment in connecting C, Python (embedded in C), and OpenGL (through C).
 
 The original goal was to have a C program that calls Python code (via the C API for Python) to generate a maze, and then visualizes this maze using OpenGL.
 
