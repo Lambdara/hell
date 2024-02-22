@@ -10,16 +10,9 @@
 #define VERTEX_SHADER_PATH "vertexshader.vs"
 #define FRAGMENT_SHADER_PATH "fragmentshader.fs"
 
-GLuint vbo, cbo;
-
 typedef struct {
     float x, y, z;
 } vector3f;
-
-int vbuffer_size;
-vector3f *colors;
-vector3f *vertices;
-
 
 vector3f create_vector3f(float, float, float);
 

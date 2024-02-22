@@ -1,5 +1,10 @@
 #include "graphics.h"
 
+GLuint vbo, cbo;
+int vbuffer_size;
+vector3f *colors;
+vector3f *vertices;
+
 vector3f create_vector3f(float x, float y, float z) {
     vector3f vector = {x, y, z};
     return vector;

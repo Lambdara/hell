@@ -11,6 +11,8 @@ cell_t ***cells;
 GLFWwindow *window;
 int width = 96, height = 54;
 
+extern GLuint vbo, cbo;
+
 struct msg {
     int x;
     int y;
